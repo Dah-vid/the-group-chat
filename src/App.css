@@ -1,0 +1,195 @@
+.App {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.chat-container {
+  width: 700px;
+  height: 600px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  padding: 25px;
+}
+
+.chat-container h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 28px;
+}
+
+.ai-info {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+}
+
+.ai-commander-erwin {
+  color: #2980b9;
+  font-weight: bold;
+}
+
+.ai-l {
+  color: #2c3e50;
+  font-weight: bold;
+}
+
+.ai-levi {
+  color: #34495e;
+  font-weight: bold;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #fafafa;
+}
+
+.message {
+  margin-bottom: 15px;
+  padding: 12px 15px;
+  border-radius: 10px;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.user-message {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  margin-left: 20%;
+  text-align: right;
+}
+
+.ai-message {
+  background-color: #ffffff;
+  border: 2px solid #e9ecef;
+  margin-right: 20%;
+}
+
+/* Different colors for different AIs */
+.message:has(strong:contains("Commander Erwin")) {
+  border-left: 4px solid #2980b9;
+}
+
+.message:has(strong:contains("L")) {
+  border-left: 4px solid #2c3e50;
+}
+
+.message:has(strong:contains("Levi")) {
+  border-left: 4px solid #34495e;
+}
+
+.input-area {
+  display: flex;
+  gap: 15px;
+}
+
+.input-area input {
+  flex: 1;
+  padding: 15px;
+  border: 2px solid #ddd;
+  border-radius: 25px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.input-area input:focus {
+  border-color: #667eea;
+}
+
+.input-area button {
+  padding: 15px 25px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: transform 0.2s ease;
+}
+
+.input-area button:hover {
+  transform: translateY(-2px);
+}
+
+.input-area button:active {
+  transform: translateY(0);
+}
+
+.loading {
+  color: #999;
+  font-style: italic;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.loading-message {
+  opacity: 0.7;
+}
+
+.typing-indicator {
+  animation: typing 1.4s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes typing {
+  0%, 60% {
+    opacity: 0.3;
+  }
+  30% {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Scrollbar styling */
+.messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messages::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.messages::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+.messages::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
