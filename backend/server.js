@@ -6,6 +6,12 @@ const Anthropic = require('@anthropic-ai/sdk');
 const app = express();
 const port = 5001;
 
+// Performance tracking variables
+let totalRequests = 0;
+let successfulRequests = 0;
+let totalResponseTime = 0;
+let totalTokensUsed = 0;
+
 // Enable CORS for all routes
 app.use(cors({
   origin: 'http://localhost:3000',
@@ -43,8 +49,26 @@ app.get('/api/test', (req, res) => {
   res.json({ message: 'Backend is working!' });
 });
 
+// Metrics endpoint
+app.get('/api/metrics', (req, res) => {
+  const averageResponseTime = totalRequests > 0 ? (totalResponseTime / totalRequests).toFixed(0) : 0;
+  const successRate = totalRequests > 0 ? ((successfulRequests / totalRequests) * 100).toFixed(1) : 0;
+  
+  res.json({
+    totalRequests,
+    successfulRequests,
+    averageResponseTime: `${averageResponseTime}ms`,
+    successRate: `${successRate}%`,
+    totalTokensUsed,
+    uptime: process.uptime()
+  });
+});
+
 // API endpoint for chat
 app.post('/api/chat', async (req, res) => {
+  const startTime = Date.now();
+  totalRequests++;
+  
   console.log('🚀 Chat endpoint hit!');
   console.log('Request body:', req.body);
   
@@ -90,7 +114,23 @@ Respond as ${character} would, staying true to their personality. Keep it conver
     });
 
     const aiResponse = response.content[0].text;
+    
+    // Track tokens used (estimate: input + output)
+    const inputTokens = Math.ceil(fullPrompt.length / 4); // Rough estimate: 4 chars per token
+    const outputTokens = Math.ceil(aiResponse.length / 4);
+    const conversationTokens = inputTokens + outputTokens;
+    totalTokensUsed += conversationTokens;
+    
+    // Track response time
+    const responseTime = Date.now() - startTime;
+    totalResponseTime += responseTime;
+    successfulRequests++;
+    
     console.log(`✅ Claude response: "${aiResponse}"`);
+    console.log(`⏱️ Response time: ${responseTime}ms`);
+    console.log(`🔢 Tokens used this request: ~${conversationTokens}`);
+    console.log(`📊 Success rate: ${((successfulRequests/totalRequests)*100).toFixed(1)}%`);
+    console.log(`📈 Average response time: ${(totalResponseTime/totalRequests).toFixed(0)}ms`);
 
     res.json({ 
       response: aiResponse,
@@ -98,7 +138,13 @@ Respond as ${character} would, staying true to their personality. Keep it conver
     });
 
   } catch (error) {
+    const responseTime = Date.now() - startTime;
+    totalResponseTime += responseTime;
+    
     console.error('❌ Error:', error.message);
+    console.log(`⏱️ Failed request time: ${responseTime}ms`);
+    console.log(`📊 Success rate: ${((successfulRequests/totalRequests)*100).toFixed(1)}%`);
+    
     res.status(500).json({ error: 'Failed to get AI response', details: error.message });
   }
 });
@@ -106,4 +152,5 @@ Respond as ${character} would, staying true to their personality. Keep it conver
 app.listen(port, () => {
   console.log(`🚀 Server running on http://localhost:${port}`);
   console.log('🔑 API Key status:', process.env.ANTHROPIC_API_KEY ? 'Loaded' : 'Missing');
+  console.log('📊 Metrics available at: http://localhost:5001/api/metrics');
 });
